@@ -104,4 +104,4 @@ class kmeans(object):
 count = 10
 epochs = 10
 
-Program3 = kmeans("cluster_dataset.txt", count, epochs)
+Program3 = kmeans("545_cluster_dataset.txt", count, epochs)
