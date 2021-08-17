@@ -1,6 +1,8 @@
 # CS 445, Summer 2021 - Programming Assignment 3 - Dan Jang
 # Assignment #3: K-Means Algorithm
 
+## UPDATED WITH DIFFERENTIAL VALUES OF K-CLUSTERS & ITERATIVE ALGORITHMIC CYCLES & Sum of Square Errors Displayed with Each Algorithmic Iteration Result
+
 import numpy
 import matplotlib.pyplot as plot
 from copy import deepcopy
@@ -84,7 +86,7 @@ class kmeans(object):
             dimension = 0
             for idx2 in range(x.shape[0]):
 
-                dimension += (numpy.linalg.norm(x[idx2]-run.K[idx]))**2
+                dimension += (numpy.linalg.norm(x[idx2] - run.K[idx]))**2
 
             error += dimension
 
@@ -93,20 +95,21 @@ class kmeans(object):
 
     # The plot function for the KMeans
 
-    def theplot(run,curr,epochs):
-        epoch = epochs + 1
-
+    def theplot(run,curr,epochz):
+        epoch = epochz
+        epoch2 = (epoch + 1)
         for idx in range(len(curr)):
             x = numpy.asarray(curr[idx])
 
             plot.scatter(x.T[0], x.T[1], cmap=plot.get_cmap('rainbow'))
             plot.scatter(run.K.T[0],run.K.T[1], c='#111111')
-
-        print()
-        print()
-        print("#" + str(epoch))
-        print()
-        plot.savefig('Figure_' + str(epoch) + '.png')
+            
+#        print()
+#        print("For K = " + str(run.count) + "...")
+#       print("...Where our current iteration # is: " + str(epoch2))
+#        print()
+        
+        plot.savefig('K_' + str(run.count) + '_Figure_Iteraction_' + str(epoch2) + '.png') # UPDATED: To differentiate the labeling based on clusters (K)
 
     # Random coefficient generation
 
@@ -123,13 +126,18 @@ class kmeans(object):
     # The main KMeans functionality
 
     def kmean(run):
-        error,clusters = [],[]
+        error = []
+        clusters = []
         
         cluster = run.assignK()
         run.theplot(cluster,0)
 
         for idx in range(run.epochs):
 
+            print()
+            print("For K = " + str(run.count) + "...")
+            print("...Where our current iteration # is:", idx+1)
+            print()
             run.updatealgo(cluster)
 
             print(run.K)
@@ -139,20 +147,48 @@ class kmeans(object):
             clusters.append(x)
 
             cluster = run.assignK()
-            error.append(run.squareerror(cluster))
-            run.theplot(cluster,(idx + 1))
+            kerror = run.squareerror(cluster)
 
-        print("The #th iteration & their centroid set with smallest sum(s) of squared error(s): ")
+            # UPDATE: Displays Sum of Error for each chosen model of k
+            print("---")
+            print("[K = ", run.count, "]", "Current Sum of Square Error for iteration #",  idx+1,  ":", kerror)
+            print("---")
+
+            error.append(kerror)
+            run.theplot(cluster,(idx))
+
+      #  print("The #th iteration & their centroid set with the smallest sum(s) of squared error(s) within this specific cycle of runs: ")
         result = numpy.argmin(numpy.array(error))
-        print(result + 2)
+        result2 = (result + 1)
+      #  print("...Where our current iteration # is:", result2)
+        print()
+        print("* * *")
+        print()
+        print("RESULTS - For K = " + str(run.count) + "; we find that iteration: " + str(result2) + " had the smallest sum of square errors")
+      #  print("...Where our current iteration # is:", idx+1, "")
+        print(str(result2) + "th iteration's centroid set:")
+      #  run.updatealgo(cluster)
         print(clusters[result])
+        print()
+        print("...with a Sum of Square Error of:")
+        print(error[result])
+        print()
+        print("* * *")
 
 
-## MAIN PROGRAM OPTIONS / CODE ##
+## MAIN PROGRAM OPTIONS / CODE ## UPDATED WITH DIFFERENTIAL VALUES OF K-CLUSTERS & ITERATIVE ALGORITHMIC CYCLES
 
-count = 10
-epochs = 10
+# count = 10 # Clusters (K) # UPDATED: K is directly inputed as the second parameter of kmeans(x, y, z)
+# epochs = 9 # Iterations # UPDATED: iterations are directly inputed as third parameter of kmeans(x, y, z)
 
-Program3 = kmeans("545_cluster_dataset.txt", count, epochs) # Runs the program
+Program3ten = kmeans("545_cluster_dataset.txt", 10, 10) # Runs the program with k,# of runs = 10 
+Program3ten.kmean() # KMeans initiation with k = 10, # of runs = 10
 
-Program3.kmean() # KMeans initiation
+Program3nine = kmeans("545_cluster_dataset.txt", 9, 9) # Runs the program with k,# of runs = 9
+Program3nine.kmean() # KMeans initiation with k = 9, # of runs = 9
+
+Program3five = kmeans("545_cluster_dataset.txt", 5, 5) # Runs the program with k,# of runs  5
+Program3five.kmean() # KMeans initiation with k = 5, # of runs = 5
+
+Program3two = kmeans("545_cluster_dataset.txt", 2, 2) # Runs the program with k,# of runs  2
+Program3two.kmean() # KMeans initiation with k = 2, # of runs = 2
